@@ -1,3 +1,12 @@
+
+
+def abs(x):
+    if x < 0:
+        return x * -1
+    else:
+        return x
+
+
 class LinAlg:
     def __init__(self, data):
         self.data = data
@@ -55,6 +64,32 @@ class LinAlg:
                 for j in range(self.shape()[1]):
                     hold.append(self.data[j][i])
                 vals.append(hold)
-        self.data = vals
+        #self.data = vals
         return LinAlg(vals)
-        
+    
+
+    def vec_size(self):
+        vec_l = 0
+        for i in self.data[0]:
+            vec_l+= abs(i)**self.shape()[1]
+        return (vec_l)**(1/self.shape()[1])
+
+
+    def l1_norm(self):
+        vec_1 = 0
+        for i in self.data[0]:
+            vec_1+= abs(i)
+
+        return vec_1
+    
+    def max_norm(self):
+        return max(self.data[0])
+    
+    
+    def matrix_norm(self):
+        # also known as Frobenius norm
+        norm = 0
+        for i in range(self.shape()[0]):
+            for j in range(self.shape()[1]):
+                norm += self[i][j]**2
+        return (norm)**(1/2)
