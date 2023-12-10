@@ -4,5 +4,6 @@ import numpy as np
 x = dp.LinAlg(np.random.rand(10,3).tolist())
 
 # normilize data
-for i in range(x.shape()[1]):
-    print(x - x.slice_matrix(i).mean())
+x_norm  = (x - x.mean(axis=1)) / x.std(axis=1)
+
+print(x_norm)
