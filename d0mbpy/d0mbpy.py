@@ -67,7 +67,6 @@ class LinAlg:
         
 
     def __getitem__(self, index):
-        print(str(index))
         if str(index) == ':':
             print('hi')
         return self.data[index]
@@ -200,7 +199,6 @@ class LinAlg:
     
     def std(self, axis=0):
         xl = self.mean(axis=axis)
-        print(xl)
         if axis == 0:
             vals = []
             for i in range(self.shape()[0]):
@@ -225,3 +223,21 @@ class LinAlg:
             
             return LinAlg([vals])
         
+
+    def cov(self):
+        means = self.mean(axis=1)[0]
+        vals = []
+        for i in range(self.shape()[0]):
+            hold = []
+            for j in range(self.shape()[1]):
+                x = self.data[i][j]
+                x_val = x - means[j]
+                for k in range(self.shape()[1]):
+                    y = self.data[i][k]
+                    y_val = y - means[k]
+                    hold.append((x_val*y_val)/(self.shape()[0] - 1))
+            vals.append(hold)
+        return LinAlg(vals).transpose()
+
+
+    
