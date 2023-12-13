@@ -1,8 +1,14 @@
 import d0mbpy.d0mbpy as dp
 import numpy as np
-
-x = dp.LinAlg(np.random.rand(10,3).tolist())
+a = np.random.rand(3,3)
+a = np.array([[1,2,3],[4,5,6],[7,8,9],[1,2,3]])
+x = dp.LinAlg(a)
 
 # normilize data
-for i in range(x.shape()[1]):
-    print(x - x.slice_matrix(i).mean())
+x_norm  = (x - x.mean(axis=0)) / x.std(axis=0)
+
+print(x_norm)
+print(np.std(a,axis=0))
+print(x.std(axis=0))
+
+print((a-np.mean(a,axis=0))/np.std(a,axis=0))

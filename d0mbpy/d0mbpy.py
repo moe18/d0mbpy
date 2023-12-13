@@ -33,14 +33,24 @@ class LinAlg:
 
     def __sub__(self, other):
 
-        other = [other]
-        if len(other) == 1:
+        #other = [other]
+        '''if other[].isdigit():
             vals = []
             for i in range(self.shape()[0]):
                 hold = []
                 Q = 0
                 for j in range(self.shape()[1]):
                     Q = self.data[i][j] - other[0]
+                    hold.append(Q)
+                vals.append(hold)
+            return LinAlg(vals)'''
+        if other.shape()[0] == 1:
+            vals = []
+            for i in range(len(self.data)):
+                hold = []
+                Q = 0
+                for j in range(len(other.data)):
+                    Q = self.data[i][j] - other.data[0][j]
                     hold.append(Q)
                 vals.append(hold)
             return LinAlg(vals)
@@ -57,7 +67,6 @@ class LinAlg:
         
 
     def __getitem__(self, index):
-        print(str(index))
         if str(index) == ':':
             print('hi')
         return self.data[index]
@@ -81,6 +90,26 @@ class LinAlg:
                     hold.append(Q)
                 vals.append(hold)
         return LinAlg(vals)
+    
+
+    def __truediv__(self, other):
+        vals = []
+        if min(other.shape()) == 1:
+            for i in range(len(self.data)):
+                Q = 0
+                for j in range(len(other.data)):
+                    Q+= self.data[i][j] / other.data[j][0]
+                vals.append([Q])
+        else:    
+            for i in range(len(self.data)):
+                hold = []
+                for j in range(len(self.data)):
+                    Q = 0
+                    for k in range(len(self.data)): 
+                        Q+= self.data[i][k] / other.data[k][j]
+                    hold.append(Q)
+                vals.append(hold)
+        return LinAlg(vals)
 
 
     def shape(self):
@@ -94,9 +123,9 @@ class LinAlg:
                 vals.append([self.data[0][i]])
             
         else:
-            for i in range(self.shape()[0]):
+            for i in range(self.shape()[1]):
                 hold = []
-                for j in range(self.shape()[1]):
+                for j in range(self.shape()[0]):
                     hold.append(self.data[j][i])
                 vals.append(hold)
         #self.data = vals
@@ -145,17 +174,6 @@ class LinAlg:
 
     def mean(self, axis=0):
         if axis == 0:
-            vals = []
-            for i in range(self.shape()[0]):
-                s = 0
-                count = 0
-                for j in range(self.shape()[1]):
-                    s+=self.data[i][j]
-                    count+=1
-                vals.append(s/ (count))
-            
-            return vals
-        elif axis == 1:
             self = self.transpose()
             vals = []
             for i in range(self.shape()[0]):
@@ -166,31 +184,65 @@ class LinAlg:
                     count+=1
                 vals.append(s/ (count))
             
-            return vals
+            return LinAlg([vals])
+        elif axis == 1:
+            vals = []
+            for i in range(self.shape()[0]):
+                s = 0
+                count = 0
+                for j in range(self.shape()[1]):
+                    s+=self.data[i][j]
+                    count+=1
+                vals.append(s/ (count))
+            
+            return LinAlg([vals])
     
     def std(self, axis=0):
         xl = self.mean(axis=axis)
         if axis == 0:
-            vals = []
-            for i in range(self.shape()[0]):
-                s = 0
-                count = 0
-                for j in range(self.shape()[1]):
-                    s+=(self.data[i][j] - xl[i])**2
-                    count+=1
-                vals.append((s/ count)**.5 )
-            
-            return vals
-        elif axis == 1:
             self = self.transpose()
             vals = []
             for i in range(self.shape()[0]):
                 s = 0
                 count = 0
                 for j in range(self.shape()[1]):
-                    s+=(self.data[i][j] - xl[i])**2
+                    s+=(self.data[i][j] - xl[0][i])**2
                     count+=1
                 vals.append((s/ count)**.5 )
             
-            return vals
+            return LinAlg([vals])
+        elif axis == 1:
+            vals = []
+            for i in range(self.shape()[0]):
+                s = 0
+                count = 0
+                for j in range(self.shape()[1]):
+                    s+=(self.data[i][j] - xl[0][i])**2
+                    count+=1
+                vals.append((s/ count)**.5 )
+            
+            return LinAlg([vals])
         
+
+    def cov(self):
+        means = self.mean(axis=1)[0]
+        print('means=', means)
+        vals = []
+        for i in range(self.shape()[0]):
+            hold = []
+            for j in range(self.shape()[0]):
+                cov_sum = 0
+                for k in range(self.shape()[1]):
+                    x = self.data[i][k]
+                    x_val = x - means[i]
+
+                    y = self.data[j][k]
+                    y_val = y - means[j]
+
+                    cov_sum+= x_val*y_val
+                hold.append(cov_sum/(self.shape()[1]-1))
+            vals.append(hold)
+        return LinAlg(vals)
+
+
+    
