@@ -184,7 +184,7 @@ class LinAlg:
                     count+=1
                 vals.append(s/ (count))
             
-            return vals
+            return LinAlg([vals])
         elif axis == 1:
             vals = []
             for i in range(self.shape()[0]):
@@ -206,7 +206,7 @@ class LinAlg:
                 s = 0
                 count = 0
                 for j in range(self.shape()[1]):
-                    s+=(self.data[i][j] - xl[i])**2
+                    s+=(self.data[i][j] - xl[0][i])**2
                     count+=1
                 vals.append((s/ count)**.5 )
             
