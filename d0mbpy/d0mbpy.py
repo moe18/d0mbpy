@@ -174,6 +174,7 @@ class LinAlg:
 
     def mean(self, axis=0):
         if axis == 0:
+            self = self.transpose()
             vals = []
             for i in range(self.shape()[0]):
                 s = 0
@@ -185,7 +186,6 @@ class LinAlg:
             
             return vals
         elif axis == 1:
-            self = self.transpose()
             vals = []
             for i in range(self.shape()[0]):
                 s = 0
@@ -200,6 +200,7 @@ class LinAlg:
     def std(self, axis=0):
         xl = self.mean(axis=axis)
         if axis == 0:
+            self = self.transpose()
             vals = []
             for i in range(self.shape()[0]):
                 s = 0
@@ -211,7 +212,6 @@ class LinAlg:
             
             return LinAlg([vals])
         elif axis == 1:
-            self = self.transpose()
             vals = []
             for i in range(self.shape()[0]):
                 s = 0
@@ -226,18 +226,23 @@ class LinAlg:
 
     def cov(self):
         means = self.mean(axis=1)[0]
+        print('means=', means)
         vals = []
         for i in range(self.shape()[0]):
             hold = []
-            for j in range(self.shape()[1]):
-                x = self.data[i][j]
-                x_val = x - means[j]
+            for j in range(self.shape()[0]):
+                cov_sum = 0
                 for k in range(self.shape()[1]):
-                    y = self.data[i][k]
-                    y_val = y - means[k]
-                    hold.append((x_val*y_val)/(self.shape()[0] - 1))
+                    x = self.data[i][k]
+                    x_val = x - means[i]
+
+                    y = self.data[j][k]
+                    y_val = y - means[j]
+
+                    cov_sum+= x_val*y_val
+                hold.append(cov_sum/(self.shape()[1]-1))
             vals.append(hold)
-        return LinAlg(vals).transpose()
+        return LinAlg(vals)
 
 
     
