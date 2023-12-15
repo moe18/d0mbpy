@@ -7,8 +7,6 @@ x = dp.LinAlg(a)
 # normilize data
 x_norm  = (x - x.mean(axis=0)) / x.std(axis=0)
 
-print(x_norm)
-print(np.std(a,axis=0))
-print(x.std(axis=0))
+print(x - x.mean(axis=0))
 
 print((a-np.mean(a,axis=0))/np.std(a,axis=0))

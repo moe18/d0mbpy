@@ -32,24 +32,23 @@ class LinAlg:
 
 
     def __sub__(self, other):
-
-        #other = [other]
-        '''if other[].isdigit():
+        if other.shape()[0] == 1 and other.shape()[1]==1:
             vals = []
             for i in range(self.shape()[0]):
                 hold = []
                 Q = 0
                 for j in range(self.shape()[1]):
-                    Q = self.data[i][j] - other[0]
+                    Q = self.data[i][j] - other.data[0][0]
                     hold.append(Q)
                 vals.append(hold)
-            return LinAlg(vals)'''
-        if other.shape()[0] == 1:
+            return LinAlg(vals)
+        
+        elif (other.shape()[0] == 1):
             vals = []
-            for i in range(len(self.data)):
+            for i in range(self.shape()[0]):
                 hold = []
                 Q = 0
-                for j in range(len(other.data)):
+                for j in range(other.shape()[1]):
                     Q = self.data[i][j] - other.data[0][j]
                     hold.append(Q)
                 vals.append(hold)
