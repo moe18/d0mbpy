@@ -21,10 +21,12 @@ class LinAlg:
             print('make sure the lengths of your input are equal')
         else:
             vals = []
-            for i in range(len(self.data)):
+            hold = []
+            shape = self.shape()
+            for i in range(shape[0]):
                 hold = []
                 Q = 0
-                for j in range(len(other.data)):
+                for j in range(shape[1]):
                     Q = self.data[i][j] + other.data[i][j]
                     hold.append(Q)
                 vals.append(hold)
@@ -275,7 +277,7 @@ class LinAlg:
 
 
     
-a = LinAlg([[1,2,3],[4,5,6]])
+a = LinAlg([[1,2,3],
+            [4,5,6]])
 
-for i in a:
-    print(i)
+print(a+a)
