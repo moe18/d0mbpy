@@ -75,6 +75,14 @@ class LinAlg:
 
     def __mul__(self,other):
         vals = []
+        if other.shape()[0] == 1 and other.shape()[1] == 1:
+            for i in range(self.shape()[0]):
+                hold = []
+                for j in range(self.shape()[1]):
+                    hold.append(other.data[0][0] * self.data[i][j])
+                vals.append(hold)
+            return LinAlg(vals)
+                
         if min(other.shape()) == 1:
             for i in range(len(self.data)):
                 Q = 0
@@ -149,6 +157,14 @@ class LinAlg:
         for i in self.data[0]:
             vec_l+= abs(i)**self.shape()[1]
         return (vec_l)**(1/self.shape()[1])
+    
+    @staticmethod
+    def l2_norm(vec):
+        vec_1 = 0
+        for i in vec:
+            vec_1+= i**2
+
+        return vec_1**.5
 
 
     def l1_norm(self):
@@ -276,8 +292,65 @@ class LinAlg:
                 return self.data[self.i][self.j-1]
 
 
+    @staticmethod
+    def zeros(shape):
+        vals = []
+        for i in range(shape[0]):
+            hold = []
+            for j in range(shape[1]):
+                hold.append(0)
+            vals.append(hold)
+        return LinAlg(vals)
     
-a = LinAlg([[1,2,3],
-            [4,5,6]])
 
-print(a+a)
+    def right(self):
+        vals = []
+        for i in range(self.shape()[0]):
+            hold = []
+            for j in range(self.shape()[1]):
+                if i <= j:
+                    hold.append(self[i][j])
+                else:
+                    hold.append(0)
+            vals.append(hold)
+        return LinAlg(vals)
+
+
+
+
+    def qr_dec(self):
+        
+        shape = self.shape()
+
+        e_vals = []
+        for i in range(shape[0]):
+            if len(e_vals):
+                u = LinAlg([self.data[i]])
+                v = LinAlg([self.data[i]])
+                for e in e_vals:
+                    e = LinAlg([e])
+                    u -= e*(v*e.transpose())
+            else:
+                u = LinAlg([self.data[i]])
+            
+            norm =self.l2_norm(u)
+            val = u/LinAlg([[norm]*shape[0]])
+            e_vals.append(val.data[0])
+
+        E = LinAlg(e_vals)
+        Q = E.transpose()
+        R = E * self
+
+        return Q, R.right()
+        
+
+        
+
+
+
+
+a = LinAlg([[1,1,0],
+            [1,0,1],
+            [0,1,1]])
+b = LinAlg([[4]])
+print(a.qr_dec())
