@@ -342,15 +342,38 @@ class LinAlg:
         R = E * self
 
         return Q, R.right()
+    
+
+    def eigen_values(self):
+        Q,R = self.qr_dec()
+        A = R * Q
+
+        for i in range(1000):
+            Q,R = A.qr_dec()
+            A = R*Q
+        return A.get_diag()
         
 
         
 
 
+import numpy as np
+from numpy.linalg import eig
 
+na = np.array([[0,2],[2,3]])
 
 a = LinAlg([[1,1,0],
             [1,0,1],
             [0,1,1]])
+a = LinAlg([[0,2],[2,3]])
 b = LinAlg([[4]])
-print(a.qr_dec())
+Q,R = a.qr_dec()
+A = R * Q
+Q, R = np.linalg.qr(na)
+
+for i in range(1000):
+    Q,R = A.qr_dec()
+    A = R*Q
+
+print(A)
+print(eig(na))
