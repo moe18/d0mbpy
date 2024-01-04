@@ -75,6 +75,14 @@ class LinAlg:
 
     def __mul__(self,other):
         vals = []
+        if other.shape()[0] == 1 and other.shape()[1] == 1:
+            for i in range(self.shape()[0]):
+                hold = []
+                for j in range(self.shape()[1]):
+                    hold.append(other.data[0][0] * self.data[i][j])
+                vals.append(hold)
+            return LinAlg(vals)
+                
         if min(other.shape()) == 1:
             for i in range(len(self.data)):
                 Q = 0
@@ -84,7 +92,7 @@ class LinAlg:
         else:    
             for i in range(len(self.data)):
                 hold = []
-                for j in range(len(self.data)):
+                for j in range(other.shape()[1]):
                     Q = 0
                     for k in range(len(self.data)): 
                         Q+= self.data[i][k] * other.data[k][j]
@@ -149,6 +157,14 @@ class LinAlg:
         for i in self.data[0]:
             vec_l+= abs(i)**self.shape()[1]
         return (vec_l)**(1/self.shape()[1])
+    
+    @staticmethod
+    def l2_norm(vec):
+        vec_1 = 0
+        for i in vec:
+            vec_1+= i**2
+
+        return vec_1**.5
 
 
     def l1_norm(self):
@@ -238,7 +254,6 @@ class LinAlg:
 
     def cov(self):
         means = self.mean(axis=1)[0]
-        print('means=', means)
         vals = []
         for i in range(self.shape()[0]):
             hold = []
@@ -276,8 +291,116 @@ class LinAlg:
                 return self.data[self.i][self.j-1]
 
 
+    @staticmethod
+    def zeros(shape):
+        vals = []
+        for i in range(shape[0]):
+            hold = []
+            for j in range(shape[1]):
+                hold.append(0)
+            vals.append(hold)
+        return LinAlg(vals)
     
-a = LinAlg([[1,2,3],
-            [4,5,6]])
 
-print(a+a)
+    def right(self):
+        vals = []
+        for i in range(self.shape()[0]):
+            hold = []
+            for j in range(self.shape()[1]):
+                if i <= j:
+                    hold.append(self[i][j])
+                else:
+                    hold.append(0)
+            vals.append(hold)
+        return LinAlg(vals)
+
+
+
+
+    def qr_dec(self):
+        
+        shape = self.shape()
+
+        e_vals = []
+        for i in range(shape[0]):
+            if len(e_vals):
+                u = LinAlg([self.data[i]])
+                v = LinAlg([self.data[i]])
+                for e in e_vals:
+                    e = LinAlg([e])
+                    u -= e*(v*e.transpose())
+            else:
+                u = LinAlg([self.data[i]])
+            
+            norm =self.l2_norm(u)
+            val = u/LinAlg([[norm]*shape[0]])
+            e_vals.append(val.data[0])
+
+        E = LinAlg(e_vals)
+        Q = E.transpose()
+        R = E * self
+
+        return Q, R.right()
+    
+
+    def eigen_values(self):
+        Q,R = self.qr_dec()
+        Q_s = Q
+        A = R * Q
+
+        for i in range(1000):
+            Q,R = A.qr_dec()
+            A = R*Q
+            Q_s *= Q
+        
+
+        return LinAlg([A.get_diag()]), Q_s
+    
+    
+    def get_eigen_vector(self, A, eigenvalues):
+        eigenvectors = []
+        I = self.identity(self.shape())
+        for lambda_ in eigenvalues:
+            # Solve (A - lambda*I)x = 0
+            eig_vec = A - LinAlg([[lambda_]])*I
+            eig_vec2 = eig_vec.eigen_values()
+            eigenvectors.append(eig_vec2.data[0])
+        return LinAlg(eigenvectors)
+    
+    @staticmethod
+    def identity(shape):
+        vals = []
+        for i in range(shape[0]):
+            hold = []
+            for j in range(shape[1]):
+                if i == j:
+                    hold.append(1)
+                else:
+                    hold.append(0)
+            vals.append(hold)
+        return LinAlg(vals)
+    
+        
+
+        
+
+
+import numpy as np
+from numpy.linalg import eig
+
+na = np.array([[0,2],[2,3]])
+
+a = LinAlg([[2,7,0],
+            [0,3,0],
+            [0,0,1]])
+#a = LinAlg([[0,2],[2,3]])
+b = LinAlg([[4]])
+Q,R = a.qr_dec()
+A = R * Q
+Q, R = np.linalg.qr(na)
+
+for i in range(1000):
+    Q,R = A.qr_dec()
+    A = R*Q
+
+#print(a.eigen_values())
