@@ -92,7 +92,7 @@ class LinAlg:
         else:    
             for i in range(len(self.data)):
                 hold = []
-                for j in range(len(self.data)):
+                for j in range(other.shape()[1]):
                     Q = 0
                     for k in range(len(self.data)): 
                         Q+= self.data[i][k] * other.data[k][j]
@@ -254,7 +254,6 @@ class LinAlg:
 
     def cov(self):
         means = self.mean(axis=1)[0]
-        print('means=', means)
         vals = []
         for i in range(self.shape()[0]):
             hold = []
@@ -346,12 +345,41 @@ class LinAlg:
 
     def eigen_values(self):
         Q,R = self.qr_dec()
+        Q_s = Q
         A = R * Q
 
         for i in range(1000):
             Q,R = A.qr_dec()
             A = R*Q
-        return A.get_diag()
+            Q_s *= Q
+        
+
+        return LinAlg([A.get_diag()]), Q_s
+    
+    
+    def get_eigen_vector(self, A, eigenvalues):
+        eigenvectors = []
+        I = self.identity(self.shape())
+        for lambda_ in eigenvalues:
+            # Solve (A - lambda*I)x = 0
+            eig_vec = A - LinAlg([[lambda_]])*I
+            eig_vec2 = eig_vec.eigen_values()
+            eigenvectors.append(eig_vec2.data[0])
+        return LinAlg(eigenvectors)
+    
+    @staticmethod
+    def identity(shape):
+        vals = []
+        for i in range(shape[0]):
+            hold = []
+            for j in range(shape[1]):
+                if i == j:
+                    hold.append(1)
+                else:
+                    hold.append(0)
+            vals.append(hold)
+        return LinAlg(vals)
+    
         
 
         
@@ -362,10 +390,10 @@ from numpy.linalg import eig
 
 na = np.array([[0,2],[2,3]])
 
-a = LinAlg([[1,1,0],
-            [1,0,1],
-            [0,1,1]])
-a = LinAlg([[0,2],[2,3]])
+a = LinAlg([[2,7,0],
+            [0,3,0],
+            [0,0,1]])
+#a = LinAlg([[0,2],[2,3]])
 b = LinAlg([[4]])
 Q,R = a.qr_dec()
 A = R * Q
@@ -375,5 +403,4 @@ for i in range(1000):
     Q,R = A.qr_dec()
     A = R*Q
 
-print(A)
-print(eig(na))
+#print(a.eigen_values())
