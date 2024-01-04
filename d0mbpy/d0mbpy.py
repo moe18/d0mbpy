@@ -380,27 +380,3 @@ class LinAlg:
             vals.append(hold)
         return LinAlg(vals)
     
-        
-
-        
-
-
-import numpy as np
-from numpy.linalg import eig
-
-na = np.array([[0,2],[2,3]])
-
-a = LinAlg([[2,7,0],
-            [0,3,0],
-            [0,0,1]])
-#a = LinAlg([[0,2],[2,3]])
-b = LinAlg([[4]])
-Q,R = a.qr_dec()
-A = R * Q
-Q, R = np.linalg.qr(na)
-
-for i in range(1000):
-    Q,R = A.qr_dec()
-    A = R*Q
-
-#print(a.eigen_values())
