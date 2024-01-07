@@ -14,6 +14,19 @@ class LinAlg:
 
     def __repr__(self):
         return f"vec({self.data})"
+    
+    def __pow__(self,expon):
+        vals = []
+        hold = []
+        shape = self.shape()
+        for i in range(shape[0]):
+            hold = []
+            Q = 0
+            for j in range(shape[1]):
+                Q = self.data[i][j]**expon
+                hold.append(Q)
+            vals.append(hold)
+        return LinAlg(vals)
 
 
     def __add__(self, other):
@@ -380,3 +393,35 @@ class LinAlg:
             vals.append(hold)
         return LinAlg(vals)
     
+
+class proba(LinAlg):
+    def __init__(self) -> None:
+        pass
+
+    @staticmethod
+    def expectaion(vals, proba=None):
+        if proba:
+            return vals * proba.transpose()
+        else:
+            _sum = 0
+            count = 0
+            for val in vals:
+                _sum+=val
+                count +=1
+            return _sum/count
+             
+           
+    def var(self, vals, proba):
+        mean = self.expectaion(vals,proba)
+        diff = vals - mean
+        var = (diff)**2
+        var = self.expectaion(var)
+        return var
+
+
+a = LinAlg([[1,2,3]])
+b = LinAlg([[.5,0,.5]])
+
+c = proba()
+
+print(c.var(a,b))
