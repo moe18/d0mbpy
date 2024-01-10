@@ -5,6 +5,15 @@ def abs(x):
         return x * -1
     else:
         return x
+    
+def ln(x):
+    # only works for -1 till 1
+    x_minus_1 = x - 1
+    ln_sum = 0
+    for i in range(1, 100 + 1):
+        ln_sum += (-1)**(i + 1) * (x_minus_1**i) / i
+    return ln_sum
+
 
 
 class LinAlg:
@@ -14,6 +23,19 @@ class LinAlg:
 
     def __repr__(self):
         return f"vec({self.data})"
+    
+    def __pow__(self,expon):
+        vals = []
+        hold = []
+        shape = self.shape()
+        for i in range(shape[0]):
+            hold = []
+            Q = 0
+            for j in range(shape[1]):
+                Q = self.data[i][j]**expon
+                hold.append(Q)
+            vals.append(hold)
+        return LinAlg(vals)
 
 
     def __add__(self, other):
@@ -379,4 +401,88 @@ class LinAlg:
                     hold.append(0)
             vals.append(hold)
         return LinAlg(vals)
+    # add random matrix 
+
+
+
     
+
+class proba(LinAlg):
+    def __init__(self, data=None, prob=.5) -> None:
+        self.data = data
+        self.prob = prob
+    
+        self.a = 1664525
+        self.c = 1013904223
+        self.m = 2**32
+        self.state = 42
+
+        self.pi = 3.14159
+        self.e = 2.71828
+
+    def rand(self):
+        self.state = (self.a * self.state + self.c) % self.m
+        return self.state / self.m
+
+    @staticmethod
+    def expectaion(vals, proba=None):
+        if proba:
+            return vals * proba.transpose()
+        else:
+            _sum = 0
+            count = 0
+            for val in vals[0]:
+                _sum+=val
+                count +=1
+            return LinAlg([[_sum/count]])
+             
+           
+    def var(self):
+        mean = self.expectaion(self.data)
+        print(self,mean)
+        diff = self - mean
+        var = (diff)**2
+        var = self.expectaion(var)
+        return var
+    
+    def bern_rand(self):
+        r = self.rand()
+        if r > self.prob:
+            return 1
+        else:
+            return 0
+
+    def bern_dist(self):
+        p = self.prob
+        q = 1 - self.prob
+        e = self.prob
+        var = p*q
+        dist = {'p':p,
+                'q':q,
+                'ex':e,
+                'var':var}
+
+        return dist
+    
+    def norm(self,x,mean,var):
+        p1 = (1/(2*self.pi*var))**.5
+        p2 = self.e**(-((x-mean)**2)/(2*var))
+        return p1*p2
+    
+    def rand_norm(self,mean=0,var=1):
+        run = True
+        while run:
+            r1 = 2 * self.rand() - 1
+            r2 = 2 * self.rand() - 1
+            s = r1**2 + r2**2
+
+            if 0 < s < 1:
+                z0 = r1 * ((-2*ln(s))/s)**.5
+                run = False
+        return z0+mean * var**.5
+
+
+
+    
+
+c = proba()
