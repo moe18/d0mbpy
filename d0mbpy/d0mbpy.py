@@ -1,23 +1,12 @@
 
+from typing import List
 
-def abs(x):
-    if x < 0:
-        return x * -1
-    else:
-        return x
-    
-def ln(x):
-    # only works for -1 till 1
-    x_minus_1 = x - 1
-    ln_sum = 0
-    for i in range(1, 100 + 1):
-        ln_sum += (-1)**(i + 1) * (x_minus_1**i) / i
-    return ln_sum
+def abs(x: int| float) -> int|float: return x if x>0 else -1 * x
 
-
+def ln(x: int|float, itterations: int=100)->int|float: return sum((-1)**(i + 1) * ((x-1)**i) / i for i in range(1,itterations))
 
 class LinAlg:
-    def __init__(self, data):
+    def __init__(self, data:List[List[int|float]]):
         self.data = data
 
 
@@ -480,6 +469,9 @@ class proba(LinAlg):
                 z0 = r1 * ((-2*ln(s))/s)**.5
                 run = False
         return z0+mean * var**.5
+
+    def sigmoid(self, x):
+        return 1 / (1+self.e**(-x))
 
 
 

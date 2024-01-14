@@ -1,5 +1,6 @@
 import pytest
-from d0mb import LinAlg  # Replace 'your_module_name' with the actual module name
+from d0mbpy.d0mbpy import LinAlg
+
 
 # Helper function to compare matrices with a given tolerance
 def assert_matrices_equal(mat1, mat2, tol=1e-6):
