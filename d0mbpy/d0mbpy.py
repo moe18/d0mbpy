@@ -409,9 +409,6 @@ class LinAlg:
             vals.append(hold)
         return LinAlg(vals)
     # add random matrix 
-
-
-
     
 
 class proba(LinAlg):
@@ -494,5 +491,11 @@ class proba(LinAlg):
 
 
     
+class NumComp(proba):
+    def __init__(self, data=None):
+        super().__init__(data)
 
-c = proba()
+    def softmax(self, x:int|float, xj_all:LinAlg) -> float: return self.e**x / sum(self.e**xj for xj in xj_all)
+
+a = NumComp()
+print(a.softmax(2,LinAlg([[1,2,3]])))
