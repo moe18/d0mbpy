@@ -1,30 +1,19 @@
 
+from typing import List
 
-def abs(x):
-    if x < 0:
-        return x * -1
-    else:
-        return x
-    
-def ln(x):
-    # only works for -1 till 1
-    x_minus_1 = x - 1
-    ln_sum = 0
-    for i in range(1, 100 + 1):
-        ln_sum += (-1)**(i + 1) * (x_minus_1**i) / i
-    return ln_sum
+def abs(x: int| float) -> int|float: return x if x>0 else -1 * x
 
-
+def ln(x: int|float, itterations: int=100)->int|float: return sum((-1)**(i + 1) * ((x-1)**i) / i for i in range(1,itterations))
 
 class LinAlg:
-    def __init__(self, data):
+    def __init__(self, data:List[List[int|float]]):
         self.data = data
 
 
     def __repr__(self):
         return f"vec({self.data})"
     
-    def __pow__(self,expon):
+    def __pow__(self,expon: int|float):
         vals = []
         hold = []
         shape = self.shape()
@@ -39,20 +28,38 @@ class LinAlg:
 
 
     def __add__(self, other):
-        if len(other.data) != len(self.data):
-            print('make sure the lengths of your input are equal')
-        else:
+        if other.shape()[0] == 1 and other.shape()[1]==1:
             vals = []
-            hold = []
-            shape = self.shape()
-            for i in range(shape[0]):
+            for i in range(self.shape()[0]):
                 hold = []
                 Q = 0
-                for j in range(shape[1]):
+                for j in range(self.shape()[1]):
+                    Q = self.data[i][j] + other.data[0][0]
+                    hold.append(Q)
+                vals.append(hold)
+            return LinAlg(vals)
+        
+        elif (other.shape()[0] == 1):
+            vals = []
+            for i in range(self.shape()[0]):
+                hold = []
+                Q = 0
+                for j in range(other.shape()[1]):
+                    Q = self.data[i][j] + other.data[0][j]
+                    hold.append(Q)
+                vals.append(hold)
+            return LinAlg(vals)
+        else:
+            vals = []
+            for i in range(len(self.data)):
+                hold = []
+                Q = 0
+                for j in range(len(other.data)):
                     Q = self.data[i][j] + other.data[i][j]
                     hold.append(Q)
                 vals.append(hold)
             return LinAlg(vals)
+        
 
 
     def __sub__(self, other):
@@ -480,6 +487,9 @@ class proba(LinAlg):
                 z0 = r1 * ((-2*ln(s))/s)**.5
                 run = False
         return z0+mean * var**.5
+
+    def sigmoid(self, x):
+        return 1 / (1+self.e**(-x))
 
 
 

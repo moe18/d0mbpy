@@ -1,5 +1,6 @@
 import pytest
-from d0mb import LinAlg  # Replace 'your_module_name' with the actual module name
+from d0mbpy.d0mbpy import LinAlg
+
 
 # Helper function to compare matrices with a given tolerance
 def assert_matrices_equal(mat1, mat2, tol=1e-6):
@@ -15,6 +16,20 @@ def test_matrix_addition():
 
     expected_result = LinAlg([[6, 8], [10, 12]])
     assert_matrices_equal(result, expected_result)
+
+    val = LinAlg([[2]])
+    res = matrix1 + val
+
+    expected_result = LinAlg([[3,4],[5,6]])
+    assert_matrices_equal(res, expected_result)
+
+    val = LinAlg([[1,2]])
+    res = matrix1 + val
+
+    expected_result = LinAlg([[2,4],[4,6]])
+    assert_matrices_equal(res, expected_result)
+
+
 
 # Test case for matrix multiplication
 def test_matrix_multiplication():
