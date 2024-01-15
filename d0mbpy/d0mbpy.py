@@ -13,7 +13,7 @@ class LinAlg:
     def __repr__(self):
         return f"vec({self.data})"
     
-    def __pow__(self,expon):
+    def __pow__(self,expon: int|float):
         vals = []
         hold = []
         shape = self.shape()
@@ -28,20 +28,38 @@ class LinAlg:
 
 
     def __add__(self, other):
-        if len(other.data) != len(self.data):
-            print('make sure the lengths of your input are equal')
-        else:
+        if other.shape()[0] == 1 and other.shape()[1]==1:
             vals = []
-            hold = []
-            shape = self.shape()
-            for i in range(shape[0]):
+            for i in range(self.shape()[0]):
                 hold = []
                 Q = 0
-                for j in range(shape[1]):
+                for j in range(self.shape()[1]):
+                    Q = self.data[i][j] + other.data[0][0]
+                    hold.append(Q)
+                vals.append(hold)
+            return LinAlg(vals)
+        
+        elif (other.shape()[0] == 1):
+            vals = []
+            for i in range(self.shape()[0]):
+                hold = []
+                Q = 0
+                for j in range(other.shape()[1]):
+                    Q = self.data[i][j] + other.data[0][j]
+                    hold.append(Q)
+                vals.append(hold)
+            return LinAlg(vals)
+        else:
+            vals = []
+            for i in range(len(self.data)):
+                hold = []
+                Q = 0
+                for j in range(len(other.data)):
                     Q = self.data[i][j] + other.data[i][j]
                     hold.append(Q)
                 vals.append(hold)
             return LinAlg(vals)
+        
 
 
     def __sub__(self, other):

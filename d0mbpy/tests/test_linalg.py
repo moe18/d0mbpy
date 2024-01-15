@@ -17,6 +17,20 @@ def test_matrix_addition():
     expected_result = LinAlg([[6, 8], [10, 12]])
     assert_matrices_equal(result, expected_result)
 
+    val = LinAlg([[2]])
+    res = matrix1 + val
+
+    expected_result = LinAlg([[3,4],[5,6]])
+    assert_matrices_equal(res, expected_result)
+
+    val = LinAlg([[1,2]])
+    res = matrix1 + val
+
+    expected_result = LinAlg([[2,4],[4,6]])
+    assert_matrices_equal(res, expected_result)
+
+
+
 # Test case for matrix multiplication
 def test_matrix_multiplication():
     matrix1 = LinAlg([[1, 2], [3, 4]])
