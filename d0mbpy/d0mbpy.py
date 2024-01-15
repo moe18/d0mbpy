@@ -495,7 +495,13 @@ class NumComp(proba):
     def __init__(self, data=None):
         super().__init__(data)
 
-    def softmax(self, x:int|float, xj_all:LinAlg) -> float: return self.e**x / sum(self.e**xj for xj in xj_all)
+    def softmax(self, x:int|float, xj_all:LinAlg) -> float:
+        z_all = xj_all-LinAlg([[max(xj_all.data[0])]])
+        z = x-max(xj_all.data[0])
+        return self.e**(z) / sum(self.e**xj for xj in z_all)
 
 a = NumComp()
-print(a.softmax(2,LinAlg([[1,2,3]])))
+val = a.softmax(.0000000002,LinAlg([[1,.0000000002,3]]))
+
+expected_result = .244728
+print(val)
