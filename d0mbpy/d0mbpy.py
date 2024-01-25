@@ -409,9 +409,6 @@ class LinAlg:
             vals.append(hold)
         return LinAlg(vals)
     # add random matrix 
-
-
-
     
 
 class proba(LinAlg):
@@ -493,6 +490,139 @@ class proba(LinAlg):
 
 
 
+import math   
+class NumComp():
+    def __init__(self, data=None,child=(),op=None, grad=0):
+        self.data = data
+        self.child = child
+        self.op = op
+        self.grad = grad
+        self._backward = lambda: None
+    
+    def tanh(self):
+        x = self.data
+        num_ = math.exp(x) - math.exp(-x)
+        den_ = math.exp(x) + math.exp(-x)
+        out = NumComp(num_ / den_, (self,), 'tanh')
+
+        def _backward():
+            self.grad += (1 - (out.data**2))* out.grad
+
+
+        out._backward = _backward
+
+
+        return out
+
+
+    def __add__(self,other):
+        other = other if isinstance(other,NumComp) else NumComp(other)
+        out = self.data + other.data
+        out = NumComp(out, child=(self, other) ,op='+')
+
+        def _backward():
+            self.grad += 1.0 * out.grad
+            other.grad += 1.0 * out.grad
+
+        out._backward = _backward
+
+        return out
+    
+    def __mul__(self,other):
+        other = other if isinstance(other, NumComp) else NumComp(other)
+        out = NumComp(self.data * other.data, child=(self, other), op='*')
+
+        def _backward():
+            self.grad += out.grad * other.data
+            other.grad += out.grad * self.data
+        out._backward = _backward
+
+        return out
+    
+    def __pow__(self, other):
+        other = other if isinstance(other, NumComp) else NumComp(other)
+        out = NumComp(self.data ** other.data, child=(self, other), op='**')
+        def _backward():
+            self.grad += out.grad * other.data ** (other-1)
+        out._backward = _backward
+
+    
+    def __neg__(self):
+        return -1 * self
+
+
+    def __truediv__(self, other):
+        other = other if isinstance(other, NumComp) else NumComp(other)
+        out = NumComp(self.data / other.data, child=(self, other), op='/')
+
+
+    def __sub__(self, other):
+        other = other if isinstance(other, NumComp) else NumComp(other)
+        out = NumComp(self.data - other.data, child=(self, other), op='-')
+    
+    def __repr__(self) -> str:
+        return f"values: {self.data}, child:{self.child}, op: {self.op}, grad: {self.grad}"
+    
+    def backward(self):
+
+        topo_list = []
+        visited = set()
+
+        def build_topo(v):
+            if v not in visited:
+                visited.add(v)
+
+                for i in v.child:
+                    build_topo(i)
+                topo_list.append(v)
+        build_topo(self)
+        self.grad = 1.0
+        for i in reversed(topo_list):
+            i._backward()
+
+
     
 
-c = proba()
+
+    
+    
+'''   
+    
+    def __mul__(self,other):
+        other = other if isinstance(other, NumComp) else NumComp(other)
+        out  =  NumComp(self.data * other.data, (self.data,other.data), '*')        return out
+        def softmax(self, x:int|float, xj_all:LinAlg) -> float:
+        z_all = xj_all-LinAlg([[max(xj_all.data[0])]])
+        z = x-max(xj_all.data[0])
+        return self.e**(z) / sum(self.e**xj for xj in z_all)
+    
+    def dirivative(self, x=3):
+        h = .00001
+        return (self.function(x+h) - self.function(x)) / h
+    
+    def grad_decent(self,epoch=10, lr=.01):
+        x = self.rand_norm()
+        for i in range(epoch):
+            diriv = self.dirivative(x=x)
+            x = self.function(x) - lr*diriv
+        return x'''
+
+
+x1 = NumComp(4)
+x2 = NumComp(3)
+
+w0 = NumComp(.1)
+w1 = NumComp(.2)
+w2 = NumComp(.3)
+
+b= w0
+x1w1 = x1*w1
+x2w2 = x2*w2 
+v =  x1w1 + x2w2
+r = v + b
+o = r.tanh()
+
+
+c= b+b
+c.backward()
+print(c)
