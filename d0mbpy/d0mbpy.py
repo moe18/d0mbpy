@@ -493,6 +493,5 @@ class proba(LinAlg):
 
 
 
-    
 
-c = proba()
+        
