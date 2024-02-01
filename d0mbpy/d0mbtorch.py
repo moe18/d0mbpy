@@ -1,3 +1,4 @@
+import math
 
 class d0mbTorch:
 
@@ -38,7 +39,7 @@ class d0mbTorch:
         return out
     
 
-    def __pow__(self,other):
+    def __pow__(self,other:int|float):
         other = other if isinstance(other, d0mbTorch) else d0mbTorch(other)
         out = self.data ** other.data
         out = d0mbTorch(out, child=(self,other), op='**')
@@ -49,6 +50,31 @@ class d0mbTorch:
         out._backward = _backward
 
         return out
+    
+    def __truediv__(self,other):
+        out = self * other**(-1)
+
+        return out
+
+    
+    def __neg__(self): return self * -1
+
+    def __rmul__(self, other): return self * other
+    def __radd__(self, other): return self + other
+    def __sub__(self, other): return self + (-other)
+    def __rsub__(self, other): return self - other
+
+
+    def exp(self):
+        out = d0mbTorch(math.exp(self.data), child=(self,), op='exp')
+
+        def _backward():
+            self.grad += out.grad * out.data
+        
+        self._backward = _backward
+
+        return out
+    
     
 
     def backward(self):
@@ -68,6 +94,7 @@ class d0mbTorch:
         topu(self)
         
         for i in reversed(backset):
+
             i._backward()
 
             
@@ -86,8 +113,7 @@ x2w2 = x2 * w2
 v1 = d0mbTorch(.5) * x1w1
 v2 = d0mbTorch(.5) * x2w2
 
-v = v1 + v2
+v = v1 - v2
 
 v.grad = 1
 v.backward()
-print(x1)
