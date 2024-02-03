@@ -31,8 +31,8 @@ class d0mbTorch:
         out = d0mbTorch(out, child=(self,other), op='*')
 
         def _backward():
-            self.grad += out.grad * other.data
-            other.grad += out.grad * self.data
+            self.grad += d0mbTorch(out.grad) * d0mbTorch(other.data)
+            other.grad += d0mbTorch(out.grad) * d0mbTorch(self.data)
 
         out._backward = _backward
 
@@ -45,7 +45,7 @@ class d0mbTorch:
         out = d0mbTorch(out, child=(self,other), op='**')
 
         def _backward():
-            self.grad += out.grad * other.data * self.data **(other.data - 1)
+            self.grad += d0mbTorch(out.grad) * d0mbTorch(other.data) * d0mbTorch(self.data) **d0mbTorch((other.data - 1))
 
         out._backward = _backward
 
@@ -94,7 +94,6 @@ class d0mbTorch:
         topu(self)
         
         for i in reversed(backset):
-
             i._backward()
 
             
@@ -104,16 +103,18 @@ class d0mbTorch:
         return f"Value:{self.data}, child:{self.child}, grad: {self.grad}, op: {self.op}"
 
 
-x1 = d0mbTorch(3)
-x2 = d0mbTorch(1)
-w1 = d0mbTorch(.5)
-w2 = d0mbTorch(.1)
-x1w1 = x1 * w1
-x2w2 = x2 * w2
-v1 = d0mbTorch(.5) * x1w1
-v2 = d0mbTorch(.5) * x2w2
+x1 = d0mbTorch(2)
+x2 = d0mbTorch(4)
 
-v = v1 - v2
+
+v = x1 **3 *x2
 
 v.grad = 1
 v.backward()
+x1.grad.data = 0.0
+x2.grad.data = 0.0
+
+v.backward()
+print(x1.grad.child[0])
+
+
