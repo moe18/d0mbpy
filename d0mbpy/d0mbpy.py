@@ -410,6 +410,99 @@ class LinAlg:
         return LinAlg(vals)
     # add random matrix 
 
+    def reshape(self,shape):
+        vals = []
+        count = 0
+        for i in range(shape[0]):
+            hold = []
+            for j in range(shape[1]):
+                hold.append(self[0][count])
+                count +=1
+            vals.append(hold)
+        
+        return LinAlg(vals)
+
+
+    @staticmethod
+    def deriv(f, x, eps=.0001, interms=0):
+        vals = x.copy()
+        vals[interms] = vals[interms]-eps
+        return round((f(x) - f(vals)) / eps,2)
+    
+
+    @staticmethod
+    def second_deriv(f, x, eps=.0001, interms=0):
+        val_plus = x.copy()
+        val_minus = x.copy()
+
+        val_plus[interms] = val_plus[interms] + eps
+        val_minus[interms] = val_minus[interms] - eps
+
+
+        return round((f(val_plus) - 2*f(x) + f(val_minus)) / eps**2,2)
+    
+    @staticmethod
+    def partial_deriv(f,x, eps=.0001, interms_i=0, interms_j=1):
+        print(x[interms_i])
+
+        a = (f([x[interms_i]+eps, x[interms_j]+eps]) - 
+         f([x[interms_i]+eps, x[interms_j]-eps]) -
+         f([x[interms_i]-eps, x[interms_j]+eps]) + 
+         f([x[interms_i]-eps, x[interms_j]-eps]))
+        b = 4 * eps**2
+
+        return round(a/b, 2)
+
+    
+    
+    def jacobian(self,f):
+        vals = []
+        for i in range(self.shape()[0]):
+            for j in range(self.shape()[1]):
+                vals.append(self.deriv(f,self.data[i],interms=j))
+        return LinAlg([vals]).reshape(self.shape())
+    
+
+    
+    def second_derive_matrix(self,f):
+        vals = []
+        for i in range(self.shape()[0]):
+            for j in range(self.shape()[1]):
+                vals.append(self.second_deriv(f,self.data[i],interms=j))
+        return LinAlg([vals]).reshape(self.shape())
+            
+    
+    # only works for 2d
+    def hessian(self, f):
+        vals = []
+        for i in range(self.shape()[1]):
+            for j in range(self.shape()[1]):
+                if i == j:
+                    vals.append(self.second_deriv(f,self.data[0],interms=j))
+                elif i < j:
+                    vals.append(self.partial_deriv(f,self.data[0],interms_i=i, interms_j=j))
+                else:
+                    vals.append(self.partial_deriv(f,self.data[0],interms_i=j, interms_j=i))
+        return LinAlg([vals]).reshape((self.shape()[1],self.shape()[1]))
+
+
+
+def f(x:List|set):
+    return x[0]**3 + x[0]*x[1]**3
+
+
+
+print(LinAlg([[1,2]]).hessian(f))
+
+#print(LinAlg.second_deriv(f,[1,2]))
+
+
+'''
+
+print(LinAlg.second_deriv(f,3))'''
+
+
+
 
 
     
