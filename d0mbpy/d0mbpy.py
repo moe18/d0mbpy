@@ -344,7 +344,8 @@ class LinAlg:
         return LinAlg(vals)
 
 
-
+    def __neg__(self):
+        return self * -1
 
     def qr_dec(self):
         
@@ -367,7 +368,7 @@ class LinAlg:
 
         E = LinAlg(e_vals)
         Q = E.transpose()
-        R = E * self
+        R = Q * self
 
         return Q, R.right()
     
@@ -484,6 +485,27 @@ class LinAlg:
                 else:
                     vals.append(self.partial_deriv(f,self.data[0],interms_i=j, interms_j=i))
         return LinAlg([vals]).reshape((self.shape()[1],self.shape()[1]))
+    
+    
+
+    def invert(self):
+        Q,R = self.qr_dec()
+        
+        inv_r = self.zeros(self.shape())
+
+        for i in range(R.shape()[0]):
+            inv_r[i][i] = 1/R[i][i]
+        for i in range(R.shape()[0]):
+            for j in range(R.shape()[1]):
+                if i == j:
+                    inv_r[i][j] = inv_r[i][j]
+                elif i > j:
+                    inv_r[i][j] = 0
+                
+                else:
+                    #something is wrong here
+                    inv_r[i][j] = -(1/ R[i][i]) *sum(R[i][k] * inv_r[k][j] for k in range(i,j+1))
+        return inv_r * Q.transpose()
 
 
 
@@ -492,7 +514,7 @@ def f(x:List|set):
 
 
 
-print(LinAlg([[1,2]]).hessian(f))
+print(LinAlg([[1,3],[2,4]])*LinAlg([[1,3],[2,4]]).invert())
 
 #print(LinAlg.second_deriv(f,[1,2]))
 
