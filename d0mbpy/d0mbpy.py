@@ -444,7 +444,6 @@ class LinAlg:
     
     @staticmethod
     def partial_deriv(f,x, eps=.0001, interms_i=0, interms_j=1):
-        print(x[interms_i])
 
         a = (f([x[interms_i]+eps, x[interms_j]+eps]) - 
          f([x[interms_i]+eps, x[interms_j]-eps]) -
@@ -506,28 +505,15 @@ class LinAlg:
                     #something is wrong here
                     inv_r[i][j] = -(1/ R[i][i]) *sum(R[i][k] * inv_r[k][j] for k in range(i,j+1))
         return inv_r * Q.transpose()
-
-
-
-def f(x:List|set):
-    return x[0]**3 + x[0]*x[1]**3
-
-
-
-print(LinAlg([[1,3],[2,4]])*LinAlg([[1,3],[2,4]]).invert())
-
-#print(LinAlg.second_deriv(f,[1,2]))
-
-
-'''
-
-print(LinAlg.second_deriv(f,3))'''
-
-
-
-
-
     
+    def flatten(self):
+        vals = []
+        for i in self:
+            vals.append(i)
+        return LinAlg([vals])
+
+
+
 
 class proba(LinAlg):
     def __init__(self, data=None, prob=.5) -> None:
@@ -561,7 +547,6 @@ class proba(LinAlg):
            
     def var(self):
         mean = self.expectaion(self.data)
-        print(self,mean)
         diff = self - mean
         var = (diff)**2
         var = self.expectaion(var)
