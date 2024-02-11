@@ -1,5 +1,6 @@
 
 from typing import List
+import random
 
 def abs(x: int| float) -> int|float: return x if x>0 else -1 * x
 
@@ -410,14 +411,15 @@ class LinAlg:
             vals.append(hold)
         return LinAlg(vals)
     # add random matrix 
-
-    def reshape(self,shape):
+    
+    staticmethod
+    def reshape(data,shape):
         vals = []
         count = 0
         for i in range(shape[0]):
             hold = []
             for j in range(shape[1]):
-                hold.append(self[0][count])
+                hold.append(data[0][count])
                 count +=1
             vals.append(hold)
         
@@ -511,6 +513,16 @@ class LinAlg:
         for i in self:
             vals.append(i)
         return LinAlg([vals])
+
+    @staticmethod
+    def rand_similar(data):
+        vals = []
+        for i in data:
+            vals.append(random.random())
+        return LinAlg([vals]).reshape(data.shape())
+
+
+    
 
 
 
