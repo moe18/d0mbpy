@@ -24,6 +24,50 @@ class Loss:
     @staticmethod
     def mse(y_hat,y):
         return (1/len(y))*(y_hat - y).T@(y_hat - y)
+    
+    @staticmethod
+    def cross_ent(pred,prob):
+        return -np.mean(np.sum(np.log(pred+.00001)*prob))
+
+
+class bayesLinReg:
+    def __init__(self,x,y) -> None:
+        self.x = x
+        self.y = y
+
+        self.x_mean = np.mean(x)
+        self.y_mean = np.mean(y)
+
+        self.x_var = np.var(x)
+        self.y_var = np.var(y)
+        self.w_mean = 0
+        self.w_var = 1
+
+        self.new_mean = None
+        self.new_var = None
+    
+    def post_prior_mean(self):
+        new_w_mean = self.w_mean * self.y_var / (self.y_var + len(self.x)*self.w_var)
+        sample_mean = (self.x_mean * len(self.x)* self.w_var) / (self.y_var + len(self.x)*self.w_var)
+
+        self.new_mean = new_w_mean + sample_mean
+    
+    def post_prior_var(self):
+        var = ((1/self.w_var) + (len(self.x)/self.y_var))**-1
+        self.new_var = var
+
+    def fit(self):
+        self.post_prior_mean()
+        self.post_prior_var()
+    
+    def predict(self, x):
+        return self.new_mean * x
+
+    def pred_var(self,x):
+        return x**2 * self.w_var**2 + self.y_var**2
+    
+
+
 
 class kfolds:
     def __init__(self, x, y, model, loss, k_fold):
@@ -63,7 +107,7 @@ class kfolds:
 
             val_y = np.array(val_y)
             
-            loss.append(self.loss.mse(pred, val_y))
+            loss.append(self.loss(pred, val_y))
 
             x_copy = x.copy()
             y_copy = y.copy()
@@ -73,12 +117,5 @@ class kfolds:
 
 
 
-
-        
-
-x = np.array([1,2,3,4,5,6,7,8,9,10])
-
-
-y = np.array([2,4,6,8,10,1,3,5,7,9])
-print(kfolds(x,y,lin_equation(),Loss,5).run())
+#print(kfolds(x,y,lin_equation(),Loss.mse,5).run())
 
