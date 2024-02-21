@@ -18,3 +18,5 @@ for i in range(1000):
     x = x - lr*grad
     print(mse(x,w,y))
 
+    
+
